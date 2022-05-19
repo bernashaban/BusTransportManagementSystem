@@ -15,9 +15,9 @@ import java.util.List;
 public class CustomerRepository implements Repository<Integer, Customer> {
 
     public static final String SELECT_ALL_CUSTOMERS = "select * from `customer`;";
-    public static final String INSERT_NEW_CUSTOMER = "insert into `customer` (`name`,`phone`) values (?, ?);";
+    public static final String INSERT_NEW_CUSTOMER = "insert into `customer` (`name`,`phone`,`username`,`password`) values (?, ?);";
     public static final String SELECT_CUSTOMER_BY_ID = "select * from `customer` where id_customer= ?;";
-    public static final String UPDATE_CUSTOMER_BY_ID = "update `customer` set `name`=?, `phone`=? where id_customer = ?;";
+    public static final String UPDATE_CUSTOMER_BY_ID = "update `customer` set `name`=?, `phone`=?,`username`=?,`password`=? where id_customer = ?;";
     public static final String DELETE_CUSTOMER_BY_ID = "delete from `customer` where id_customer = ?;";
     private Connection connection;
 
@@ -60,6 +60,8 @@ public class CustomerRepository implements Repository<Integer, Customer> {
         try (var stmt = connection.prepareStatement(INSERT_NEW_CUSTOMER, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, entity.getName());
             stmt.setString(2, entity.getPhone());
+            stmt.setString(3, entity.getUsername());
+            stmt.setString(4, entity.getPassword());
             connection.setAutoCommit(false);
             var affectedRows = stmt.executeUpdate();
             connection.commit();
@@ -93,7 +95,9 @@ public class CustomerRepository implements Repository<Integer, Customer> {
             var stmt = connection.prepareStatement(UPDATE_CUSTOMER_BY_ID);
             stmt.setString(1, entity.getName());
             stmt.setString(2, entity.getPhone());
-            stmt.setInt(3, old.getId());
+            stmt.setString(4, entity.getUsername());
+            stmt.setString(5, entity.getPassword());
+            stmt.setInt(6, old.getId());
             connection.setAutoCommit(false);
             var affectedRows = stmt.executeUpdate();
             connection.commit();
@@ -127,7 +131,9 @@ public class CustomerRepository implements Repository<Integer, Customer> {
             results.add(new Customer(
                     rs.getInt(1),
                     rs.getString(2),
-                    rs.getString(3)
+                    rs.getString(3),
+                    rs.getString(4),
+                    rs.getString(5)
             ));
         }
         return results;
