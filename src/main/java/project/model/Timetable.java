@@ -19,7 +19,7 @@ public class Timetable {
         this.price = price;
     }
 
-    public Timetable(int id, Timestamp dateFrom, Destination destination, int membersCount, double price) {
+    public Timetable(int id,Destination destination, Timestamp dateFrom,  int membersCount, double price) {
         this.id = id;
         this.dateFrom = dateFrom;
         this.destination = destination;
