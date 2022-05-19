@@ -29,7 +29,7 @@ public class CustomerRepository implements Repository<Integer, Customer> {
     public Collection<Customer> findAll() {
         try (var stmt = connection.prepareStatement(SELECT_ALL_CUSTOMERS)) {
             var rs = stmt.executeQuery();
-            return toClient(rs);
+            return toCustomer(rs);
         } catch (SQLException ex) {
             System.out.println("Error creating connection to DB");
             throw new EntityPersistenceException("Error executing SQL query: " + SELECT_ALL_CUSTOMERS, ex);
@@ -121,7 +121,7 @@ public class CustomerRepository implements Repository<Integer, Customer> {
         return customer;
     }
 
-    public List<Customer> toClient(ResultSet rs) throws SQLException {
+    public List<Customer> toCustomer(ResultSet rs) throws SQLException {
         List<Customer> results = new ArrayList<>();
         while (rs.next()) {
             results.add(new Customer(
