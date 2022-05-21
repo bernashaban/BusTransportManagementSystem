@@ -19,7 +19,7 @@ public class Timetable {
         this.price = price;
     }
 
-    public Timetable(int id,Destination destination, Timestamp dateFrom,  int membersCount, double price) {
+    public Timetable(int id, Destination destination, Timestamp dateFrom, int membersCount, double price) {
         this.id = id;
         this.dateFrom = dateFrom;
         this.destination = destination;
@@ -69,12 +69,10 @@ public class Timetable {
 
     @Override
     public String toString() {
-        return "Timetable{" +
-                "id=" + id +
-                ", dateFrom=" + dateFrom +
-                ", destination=" + destination +
-                ", membersCount=" + membersCount +
-                ", price=" + price +
-                '}';
+        return "Разписание ID: " + id + "\n" +
+                "Дестинация: " + destination.getDestination() + "\n" +
+                "Начало на превозване: " + dateFrom + "\n" +
+                "Брой места: " + membersCount + "\n" +
+                "Цена: " + price + "\n";
     }
 }
