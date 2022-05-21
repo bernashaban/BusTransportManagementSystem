@@ -128,4 +128,13 @@ public class DestinationRepository implements Repository<Integer, Destination> {
         }
         return results;
     }
+    public Destination findByName(String name){
+        var destinations = findAll();
+        for (Destination destination : destinations) {
+            if(destination.getDestination().equals(name)){
+                return destination;
+            }
+        }
+        return null;
+    }
 }
