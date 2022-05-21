@@ -34,6 +34,6 @@ public class Destination {
 
     @Override
     public String toString() {
-        return "Дестинация ID: " + id + " | Име: " + destination + '\'';
+        return "Дестинация ID: " + id + " | Име: " + destination + "\n";
     }
 }

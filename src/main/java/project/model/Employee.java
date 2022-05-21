@@ -78,6 +78,6 @@ public class Employee {
 
     @Override
     public String toString() {
-        return "Служител ID: " + id + " | Име: " + name +" | Телефон: "+ phone + " | Позиция: "+ position.getPosition() + '\'';
+        return "Служител ID: " + id + " | Име: " + name +" | Телефон: "+ phone + " | Позиция: "+ position.getPosition() + "\n";
     }
 }

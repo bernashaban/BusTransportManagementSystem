@@ -67,6 +67,6 @@ public class Customer {
 
     @Override
     public String toString() {
-        return "Клиент ID: " + id + " | Име: " + name +" | Телефон: "+ phone + '\'';
+        return "Клиент ID: " + id + " | Име: " + name + " | Телефон: " + phone + "\n";
     }
 }
