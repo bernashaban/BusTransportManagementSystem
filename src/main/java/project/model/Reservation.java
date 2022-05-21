@@ -2,33 +2,33 @@ package project.model;
 
 import java.sql.Timestamp;
 
-public class Reserve {
+public class Reservation {
     private int id;
-    private Timestamp reservationDate;
     private Employee employee;
     private Customer customer;
     private Timetable timetable;
+    private Timestamp reservationDate;
     private Timestamp travelDate;
     private int ticketCount;
 
-    public Reserve() {
+    public Reservation() {
     }
 
-    public Reserve(Timestamp reservationDate, Employee employee, Customer customer, Timetable timetable, Timestamp travelDate, int ticketCount) {
-        this.reservationDate = reservationDate;
+    public Reservation(Employee employee, Customer customer, Timetable timetable, Timestamp reservationDate, Timestamp travelDate, int ticketCount) {
         this.employee = employee;
         this.customer = customer;
         this.timetable = timetable;
+        this.reservationDate = reservationDate;
         this.travelDate = travelDate;
         this.ticketCount = ticketCount;
     }
 
-    public Reserve(int id, Timestamp reservationDate, Employee employee, Customer customer, Timetable timetable, Timestamp travelDate, int ticketCount) {
+    public Reservation(int id, Employee employee, Customer customer, Timetable timetable, Timestamp reservationDate, Timestamp travelDate, int ticketCount) {
         this.id = id;
-        this.reservationDate = reservationDate;
         this.employee = employee;
         this.customer = customer;
         this.timetable = timetable;
+        this.reservationDate = reservationDate;
         this.travelDate = travelDate;
         this.ticketCount = ticketCount;
     }
@@ -95,8 +95,8 @@ public class Reserve {
                 "Дата на резервация: " + reservationDate + "\n" +
                 "Служител: " + employee.getName() + "\n" +
                 "Клиент: " + customer.getName() + "\n" +
-                "timetable: " + timetable + "\n" +
-                "Дата на пътуван:" + travelDate + "\n" +
-                "Брой билети: " + ticketCount;
+                "Разписание ID: " + timetable.getId() + "\n" +
+                "Дата на пътуване: " + travelDate + "\n" +
+                "Брой билети: " + ticketCount + "\n";
     }
 }
