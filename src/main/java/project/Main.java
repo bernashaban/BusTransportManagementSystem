@@ -1,5 +1,8 @@
 package project;
 
+import project.controller.MainController;
+import project.dao.impl.*;
+import project.service.impl.*;
 import project.util.Jdbc;
 
 import java.io.FileInputStream;
@@ -28,6 +31,26 @@ public class Main {
         }
 
 
+        CustomerRepository customerRepository = new CustomerRepository(conn);
+        CustomerService customerService = new CustomerService(customerRepository);
+
+        PositionRepository positionRepository = new PositionRepository(conn);
+        PositionService positionService = new PositionService(positionRepository);
+
+        EmployeeRepository employeeRepository = new EmployeeRepository(conn, positionRepository);
+        EmployeeService employeeService = new EmployeeService(employeeRepository);
+
+        DestinationRepository destinationRepository = new DestinationRepository(conn);
+        DestinationService destinationService = new DestinationService(destinationRepository);
+
+        TimetableRepository timetableRepository = new TimetableRepository(conn, destinationRepository);
+        TimetableService timetableService = new TimetableService(timetableRepository);
+
+        ReservationRepository reservationRepository = new ReservationRepository(conn, employeeRepository, customerRepository, timetableRepository);
+        ReservationService reservationService = new ReservationService(reservationRepository);
+
+        var mainController = new MainController(customerService, destinationService,employeeService, positionService,reservationService, timetableService);
+        mainController.init();
 
         try {
             closeConnection(conn);
