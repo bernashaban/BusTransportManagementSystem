@@ -18,9 +18,11 @@ public class TimetableRepository implements Repository<Integer, Timetable> {
     public static final String UPDATE_TIMETABLE_BY_ID = "update `timetable` set `destionation_id`=?,`date_from`=?,`members_count`=?,`price`=? where id_timetable = ?;";
     public static final String DELETE_TIMETABLE_BY_ID = "delete from `timetable` where id_timetable = ?;";
     private Connection connection;
+    private DestinationRepository destinationRepository;
 
-    public TimetableRepository(Connection connection) {
+    public TimetableRepository(Connection connection, DestinationRepository destinationRepository) {
         this.connection = connection;
+        this.destinationRepository = destinationRepository;
     }
 
     @Override
@@ -124,12 +126,13 @@ public class TimetableRepository implements Repository<Integer, Timetable> {
         }
         return timetable;
     }
+
     public List<Timetable> toTimetable(ResultSet rs) throws SQLException {
         List<Timetable> results = new ArrayList<>();
         while (rs.next()) {
             results.add(new Timetable(
                     rs.getInt(1),
-                    new Destination(),
+                    destinationRepository.findById(rs.getInt(2)),
                     rs.getTimestamp(3),
                     rs.getInt(4),
                     rs.getDouble(5)
@@ -137,8 +140,15 @@ public class TimetableRepository implements Repository<Integer, Timetable> {
         }
         return results;
     }
-    //   private Timestamp dateFrom;
-    //    private Destination destination;
-    //    int membersCount;
-    //    double price;
+
+    public List<Timetable> findTimetablesByDestination(Destination destination) {
+        List<Timetable> allTimetables = findAll().stream().toList();
+        List<Timetable> timetables = new ArrayList<>();
+        for (Timetable timetable : allTimetables) {
+            if (timetable.getDestination().getDestination().equals(destination.getDestination())) {
+                timetables.add(timetable);
+            }
+        }
+        return timetables;
+    }
 }
