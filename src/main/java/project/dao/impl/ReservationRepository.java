@@ -3,9 +3,7 @@ package project.dao.impl;
 import project.dao.Repository;
 import project.exception.EntityPersistenceException;
 import project.model.Customer;
-import project.model.Employee;
-import project.model.Reserve;
-import project.model.Timetable;
+import project.model.Reservation;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -15,20 +13,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ReserveRepository implements Repository<Integer, Reserve> {
+public class ReservationRepository implements Repository<Integer, Reservation> {
     public static final String SELECT_ALL_RESERVES = "select * from `reserve`;";
     public static final String INSERT_NEW_RESERVE = "insert into `reserve` (`employee_id`,`customer_id`,`timetable_id`,`reservation_date`,`travel_date`,`ticket_count`) values (?, ?, ?, ?, ?, ?);";
     public static final String SELECT_RESERVE_BY_ID = "select * from `reserve` where id_reserve= ?;";
     public static final String UPDATE_RESERVE_BY_ID = "update `reserve` set `employee_id`=?,`customer_id`=?,`timetable_id`=?,`reservation_date`=?,`travel_date`=?,`ticket_count`=? where id_reserve = ?;";
     public static final String DELETE_RESERVE_BY_ID = "delete from `reserve` where id_reserve = ?;";
     private Connection connection;
+    private EmployeeRepository employeeRepository;
+    private CustomerRepository customerRepository;
+    private TimetableRepository timetableRepository;
 
-    public ReserveRepository(Connection connection) {
+    public ReservationRepository(Connection connection, EmployeeRepository employeeRepository, CustomerRepository customerRepository, TimetableRepository timetableRepository) {
         this.connection = connection;
+        this.employeeRepository = employeeRepository;
+        this.customerRepository = customerRepository;
+        this.timetableRepository = timetableRepository;
     }
 
     @Override
-    public Collection<Reserve> findAll() {
+    public Collection<Reservation> findAll() {
         try (var stmt = connection.prepareStatement(SELECT_ALL_RESERVES)) {
             var rs = stmt.executeQuery();
             return toReserve(rs);
@@ -39,12 +43,12 @@ public class ReserveRepository implements Repository<Integer, Reserve> {
     }
 
     @Override
-    public Reserve findById(Integer id) {
+    public Reservation findById(Integer id) {
         var reserves = findAll();
         try (var stmt = connection.prepareStatement(SELECT_RESERVE_BY_ID)) {
             stmt.setInt(1, id);
             var rs = stmt.executeQuery();
-            for (Reserve reserve : reserves) {
+            for (Reservation reserve : reserves) {
                 Integer currentId = reserve.getId();
                 if (currentId.equals(id)) {
                     return reserve;
@@ -58,12 +62,12 @@ public class ReserveRepository implements Repository<Integer, Reserve> {
     }
 
     @Override
-    public Reserve create(Reserve entity) {
+    public Reservation create(Reservation entity) {
         try (var stmt = connection.prepareStatement(INSERT_NEW_RESERVE, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setTimestamp(1, entity.getReservationDate());
-            stmt.setInt(2, entity.getEmployee().getId());
-            stmt.setInt(3, entity.getCustomer().getId());
-            stmt.setInt(4, entity.getTimetable().getId());
+            stmt.setInt(1, entity.getEmployee().getId());
+            stmt.setInt(2, entity.getCustomer().getId());
+            stmt.setInt(3, entity.getTimetable().getId());
+            stmt.setTimestamp(4, entity.getReservationDate());
             stmt.setTimestamp(5, entity.getTravelDate());
             stmt.setInt(6, entity.getTicketCount());
             connection.setAutoCommit(false);
@@ -93,14 +97,14 @@ public class ReserveRepository implements Repository<Integer, Reserve> {
     }
 
     @Override
-    public Reserve update(Reserve entity) {
+    public Reservation update(Reservation entity) {
         var old = findById(entity.getId());
         try {
             var stmt = connection.prepareStatement(UPDATE_RESERVE_BY_ID);
-            stmt.setTimestamp(1, entity.getReservationDate());
-            stmt.setInt(2, entity.getEmployee().getId());
-            stmt.setInt(3, entity.getCustomer().getId());
-            stmt.setInt(4, entity.getTimetable().getId());
+            stmt.setInt(1, entity.getEmployee().getId());
+            stmt.setInt(2, entity.getCustomer().getId());
+            stmt.setInt(3, entity.getTimetable().getId());
+            stmt.setTimestamp(4, entity.getReservationDate());
             stmt.setTimestamp(5, entity.getTravelDate());
             stmt.setInt(6, entity.getTicketCount());
             stmt.setInt(7, old.getId());
@@ -116,7 +120,7 @@ public class ReserveRepository implements Repository<Integer, Reserve> {
     }
 
     @Override
-    public Reserve deleteById(Integer id) {
+    public Reservation deleteById(Integer id) {
         var customer = findById(id);
         try (var stmt = connection.prepareStatement(DELETE_RESERVE_BY_ID)) {
             stmt.setInt(1, id);
@@ -130,24 +134,30 @@ public class ReserveRepository implements Repository<Integer, Reserve> {
         }
         return customer;
     }
-    public List<Reserve> toReserve(ResultSet rs) throws SQLException {
-        List<Reserve> results = new ArrayList<>();
+    public List<Reservation> toReserve(ResultSet rs) throws SQLException {
+        List<Reservation> results = new ArrayList<>();
         while (rs.next()) {
-            results.add(new Reserve(
-                    rs.getTimestamp(1),
-                    new Employee(),
-                    new Customer(),
-                    new Timetable(),
+            results.add(new Reservation(
+                    rs.getInt(1),
+                    employeeRepository.findById(rs.getInt(2)),
+                    customerRepository.findById(rs.getInt(3)),
+                    timetableRepository.findById(rs.getInt(4)),
                     rs.getTimestamp(5),
-                    rs.getInt(6)
+                    rs.getTimestamp(6),
+                    rs.getInt(7)
             ));
         }
         return results;
     }
-    // private Timestamp reservationDate;
-    //    private Employee employee;
-    //    private Customer customer;
-    //    private Timetable timetable;
-    //    private Timestamp travelDate;
-    //    private int ticketCount;
+    public List<Reservation> customerReservations(Customer customer){
+        var allReservations = findAll();
+        List<Reservation> customerReservations = new ArrayList<>();
+        for (Reservation reservation : allReservations) {
+            Integer currentCustomerId = reservation.getCustomer().getId();
+            if (currentCustomerId.equals(customer.getId())) {
+                customerReservations.add(reservation);
+            }
+        }
+        return customerReservations;
+    }
 }
