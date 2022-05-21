@@ -95,9 +95,9 @@ public class CustomerRepository implements Repository<Integer, Customer> {
             var stmt = connection.prepareStatement(UPDATE_CUSTOMER_BY_ID);
             stmt.setString(1, entity.getName());
             stmt.setString(2, entity.getPhone());
-            stmt.setString(4, entity.getUsername());
-            stmt.setString(5, entity.getPassword());
-            stmt.setInt(6, old.getId());
+            stmt.setString(3, entity.getUsername());
+            stmt.setString(4, entity.getPassword());
+            stmt.setInt(5, old.getId());
             connection.setAutoCommit(false);
             var affectedRows = stmt.executeUpdate();
             connection.commit();
@@ -137,5 +137,16 @@ public class CustomerRepository implements Repository<Integer, Customer> {
             ));
         }
         return results;
+    }
+
+    public Customer findByUsername(String username) {
+        var customers = findAll();
+        for (Customer customer : customers) {
+            String currentUsername = customer.getUsername();
+            if(currentUsername.equals(username)){
+                return customer;
+            }
+        }
+        return null;
     }
 }
