@@ -20,9 +20,11 @@ public class EmployeeRepository implements Repository<Integer, Employee> {
     public static final String UPDATE_EMPLOYEE_BY_ID = "update `employee` set `name`=?, `phone`=?,`position_id`=?,`username`=?,`password`=? where id_employee = ?;";
     public static final String DELETE_EMPLOYEE_BY_ID = "delete from `employee` where id_employee = ?;";
     private Connection connection;
+    private PositionRepository positionRepository;
 
-    public EmployeeRepository(Connection connection) {
+    public EmployeeRepository(Connection connection, PositionRepository positionRepository) {
         this.connection = connection;
+        this.positionRepository = positionRepository;
     }
 
     @Override
@@ -133,12 +135,21 @@ public class EmployeeRepository implements Repository<Integer, Employee> {
                     rs.getInt(1),
                     rs.getString(2),
                     rs.getString(3),
-                    // positionService.getById(rs.getInt(4))
-                    new Position(),
+                    positionRepository.findById(rs.getInt(4)),
                     rs.getString(5),
                     rs.getString(6)
             ));
         }
         return results;
+    }
+    public Employee findByUsername(String username) {
+        var employees = findAll();
+        for (Employee employee : employees) {
+            String currentUsername = employee.getUsername();
+            if(currentUsername.equals(username)){
+                return employee;
+            }
+        }
+        return null;
     }
 }
