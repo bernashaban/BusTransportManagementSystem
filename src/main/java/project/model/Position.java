@@ -34,6 +34,6 @@ public class Position {
 
     @Override
     public String toString() {
-        return "Позиция ID: " + id + " | Име: " + position + '\'';
+        return "Позиция ID: " + id + " | Име: " + position + "\n";
     }
 }
